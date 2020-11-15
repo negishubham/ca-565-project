@@ -988,7 +988,6 @@ all_isa_list.sort()
 all_gpu_isa_list.sort()
 
 sticky_vars.AddVariables(
-#    EnumVariable('TARGET_ISA', 'Target ISA', 'arm', all_isa_list),    # DEKim ('alpha' -> 'arm')
     EnumVariable('TARGET_ISA', 'Target ISA', 'alpha', all_isa_list),   
 
     EnumVariable('TARGET_GPU_ISA', 'Target GPU ISA', 'hsail', all_gpu_isa_list),
