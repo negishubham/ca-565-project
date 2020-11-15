@@ -154,6 +154,7 @@ class MinorDefaultFloatSimdFU(MinorFU):
 
     timings = [MinorFUTiming(description='FloatSimd',
         srcRegsRelativeLats=[2])]
+#    issueLat = 1
     opLat = 6
 
 class MinorDefaultPredFU(MinorFU):
@@ -203,10 +204,10 @@ class MinorCPU(BaseCPU):
         "Number of line fetches allowable in flight at once")
     fetch1LineSnapWidth = Param.Unsigned(0,
         "Fetch1 'line' fetch snap size in bytes"
-        " (0 means use system cache line size)")
+        " (0 means use system cache line size)") # 0 -> 1
     fetch1LineWidth = Param.Unsigned(0,
         "Fetch1 maximum fetch size in bytes (0 means use system cache"
-        " line size)")
+        " line size)") # 0 -> 1
     fetch1ToFetch2ForwardDelay = Param.Cycles(1,
         "Forward cycle delay from Fetch1 to Fetch2 (1 means next cycle)")
     fetch1ToFetch2BackwardDelay = Param.Cycles(1,
@@ -223,42 +224,59 @@ class MinorCPU(BaseCPU):
 
     decodeInputBufferSize = Param.Unsigned(3,
         "Size of input buffer to Decode in cycles-worth of insts.")
-    decodeToExecuteForwardDelay = Param.Cycles(1,
-        "Forward cycle delay from Decode to Execute (1 means next cycle)")
-    decodeInputWidth = Param.Unsigned(2,
+    decodeToExecuteForwardDelay = Param.Cycles(1,                           # DEKim --
+        "Forward cycle delay from Decode to Execute (1 means next cycle)")  # DEKim --
+    decodeToExecute1ForwardDelay = Param.Cycles(1,                             # DEKim ++
+        "Forward cycle delay from Decode to Execute (1 means next cycle)")     # DEKim ++
+
+    decodeInputWidth = Param.Unsigned(1,
         "Width (in instructions) of input to Decode (and implicitly"
-        " Decode's own width)")
+        " Decode's own width)") # 2 -> 1
+
     decodeCycleInput = Param.Bool(True,
         "Allow Decode to pack instructions from more than one input cycle"
         " to fill its output each cycle")
 
-    executeInputWidth = Param.Unsigned(2,
-        "Width (in instructions) of input to Execute")
+    execute1InputWidth = Param.Unsigned(1,                                  # DEKim ++
+        "Width (in instructions) of input to Execute1")                     # DEKim ++
+
+    execute1InputBufferSize = Param.Unsigned(3,                             # DEKim ++
+        "Size of input buffer to execute1 in cycles-worth of insts.")       # DEKim ++
+
+    execute1ToExecuteForwardDelay = Param.Cycles(1,                         # DEKim ++
+        "Forward cycle delay from Decode to Execute (1 means next cycle)")  # DEKim ++
+
+    execute1CycleInput = Param.Bool(True,                                   # DEKim ++
+        "Allow Execute1 to use instructions from more than one input cycle" # DEKim ++
+        " each cycle")                                                      # DEKim ++
+
+    executeInputWidth = Param.Unsigned(1,
+        "Width (in instructions) of input to Execute") # 2 -> 1
     executeCycleInput = Param.Bool(True,
         "Allow Execute to use instructions from more than one input cycle"
         " each cycle")
-    executeIssueLimit = Param.Unsigned(2,
-        "Number of issuable instructions in Execute each cycle")
+    executeIssueLimit = Param.Unsigned(1,
+        "Number of issuable instructions in Execute each cycle") # 2 -> 1
     executeMemoryIssueLimit = Param.Unsigned(1,
         "Number of issuable memory instructions in Execute each cycle")
-    executeCommitLimit = Param.Unsigned(2,
-        "Number of committable instructions in Execute each cycle")
+    executeCommitLimit = Param.Unsigned(1,
+        "Number of committable instructions in Execute each cycle") # 2 -> 1
     executeMemoryCommitLimit = Param.Unsigned(1,
         "Number of committable memory references in Execute each cycle")
     executeInputBufferSize = Param.Unsigned(7,
         "Size of input buffer to Execute in cycles-worth of insts.")
     executeMemoryWidth = Param.Unsigned(0,
         "Width (and snap) in bytes of the data memory interface. (0 mean use"
-        " the system cacheLineSize)")
-    executeMaxAccessesInMemory = Param.Unsigned(2,
+        " the system cacheLineSize)") # 0 -> 1
+    executeMaxAccessesInMemory = Param.Unsigned(1,
         "Maximum number of concurrent accesses allowed to the memory system"
-        " from the dcache port")
-    executeLSQMaxStoreBufferStoresPerCycle = Param.Unsigned(2,
-        "Maximum number of stores that the store buffer can issue per cycle")
+        " from the dcache port") # 2 -> 1
+    executeLSQMaxStoreBufferStoresPerCycle = Param.Unsigned(1,
+        "Maximum number of stores that the store buffer can issue per cycle") # 2 -> 1
     executeLSQRequestsQueueSize = Param.Unsigned(1,
         "Size of LSQ requests queue (address translation queue)")
-    executeLSQTransfersQueueSize = Param.Unsigned(2,
-        "Size of LSQ transfers queue (memory transaction queue)")
+    executeLSQTransfersQueueSize = Param.Unsigned(1,
+        "Size of LSQ transfers queue (memory transaction queue)") # 2 -> 1
     executeLSQStoreBufferSize = Param.Unsigned(5,
         "Size of LSQ store buffer")
     executeBranchDelay = Param.Cycles(1,
@@ -282,6 +300,9 @@ class MinorCPU(BaseCPU):
 
     branchPred = Param.BranchPredictor(TournamentBP(
         numThreads = Parent.numThreads), "Branch Predictor")
+
+    branchPredRate = Param.Unsigned(100, 
+        "Prediction Rate of Branch")
 
     def addCheckerCpu(self):
         print("Checker not yet supported by MinorCPU")

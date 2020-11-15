@@ -49,10 +49,12 @@
 #include "cpu/minor/cpu.hh"
 #include "cpu/minor/decode.hh"
 #include "cpu/minor/execute.hh"
+#include "cpu/minor/execute1.hh" // DEKim ++
 #include "cpu/minor/fetch1.hh"
 #include "cpu/minor/fetch2.hh"
 #include "params/MinorCPU.hh"
 #include "sim/ticked_object.hh"
+
 
 namespace Minor
 {
@@ -77,10 +79,13 @@ class Pipeline : public Ticked
     Latch<ForwardLineData> f1ToF2;
     Latch<BranchData> f2ToF1;
     Latch<ForwardInstData> f2ToD;
-    Latch<ForwardInstData> dToE;
+//    Latch<ForwardInstData> dToE;    // DEKim --
+    Latch<ForwardInstData> dToE1;   // DEKim ++
+    Latch<ForwardInstData> e1ToE;  // DEKim ++
     Latch<BranchData> eToF1;
 
     Execute execute;
+    Execute1 execute1;            // DEKim ++
     Decode decode;
     Fetch2 fetch2;
     Fetch1 fetch1;
@@ -97,7 +102,9 @@ class Pipeline : public Ticked
         /* A stage representing wakeup of the whole processor */
         CPUStageId = 0,
         /* Real pipeline stages */
-        Fetch1StageId, Fetch2StageId, DecodeStageId, ExecuteStageId,
+//        Fetch1StageId, Fetch2StageId, DecodeStageId, ExecuteStageId,    // DEKim --
+        Fetch1StageId, Fetch2StageId, DecodeStageId, Execute1StageId, ExecuteStageId,    // DEKim ++
+
         Num_StageId /* Stage count */
     };
 

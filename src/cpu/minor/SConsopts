@@ -38,3 +38,5 @@
 Import('*')
 
 CpuModel('MinorCPU', default=True)
+#CpuModel('MyMinorCPU', default=True)
+

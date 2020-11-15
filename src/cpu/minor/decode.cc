@@ -54,13 +54,16 @@ Decode::Decode(const std::string &name,
     inp(inp_),
     out(out_),
     nextStageReserve(next_stage_input_buffer),
-    outputWidth(params.executeInputWidth),
+//    outputWidth(params.executeInputWidth),       // DEKim --
+    outputWidth(params.execute1InputWidth),    // DEKim ++
+
     processMoreThanOneInput(params.decodeCycleInput),
     decodeInfo(params.numThreads),
     threadPriority(0)
 {
     if (outputWidth < 1)
-        fatal("%s: executeInputWidth must be >= 1 (%d)\n", name, outputWidth);
+//        fatal("%s: executeInputWidth must be >= 1 (%d)\n", name, outputWidth);      // DEKim --
+        fatal("%s: execute1InputWidth must be >= 1 (%d)\n", name, outputWidth);    // DEKim ++
 
     if (params.decodeInputBufferSize < 1) {
         fatal("%s: decodeInputBufferSize must be >= 1 (%d)\n", name,

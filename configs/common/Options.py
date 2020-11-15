@@ -159,6 +159,11 @@ def addNoISAOptions(parser):
              "Direct parameters of the root object are not accessible, "
              "only parameters of its children.")
 
+    # DE Kim Option
+    parser.add_option("--fpu_operation_latency", type="int", default=6)
+    parser.add_option("--fpu_issue_latency", type="int", default=1)
+
+
 # Add common options that assume a non-NULL ISA.
 def addCommonOptions(parser):
     # start by adding the base options that do not assume an ISA
