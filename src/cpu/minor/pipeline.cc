@@ -89,9 +89,10 @@ Pipeline::Pipeline(MinorCPU &cpu_, MinorCPUParams &params) :
         std::max(params.fetch1ToFetch2ForwardDelay,
         std::max(params.fetch2ToDecodeForwardDelay,
 //        std::max(params.decodeToExecuteForwardDelay,        // DEKim --
+//        params.executeBranchDelay)))),                      // DEKim --
         std::max(params.decodeToExecute1ForwardDelay,       // DEKim ++
         std::max(params.execute1ToExecuteForwardDelay,      // DEKim ++
-        params.executeBranchDelay))))),
+        params.executeBranchDelay))))),                     // DEKim ++
     needToSignalDrained(false)
 {
     if (params.fetch1ToFetch2ForwardDelay < 1) {
@@ -147,7 +148,7 @@ Pipeline::minorTrace() const
 //    dToE.minorTrace();          // DEKim --
     dToE1.minorTrace();       // DEKim ++
     execute1.minorTrace();    // DEKim ++
-    e1ToE.minorTrace();       // DEKim ++
+    e1ToE.minorTrace();       // DEKim ++ 
     execute.minorTrace();
     eToF1.minorTrace();
     activityRecorder.minorTrace();
@@ -278,7 +279,7 @@ Pipeline::isDrained()
         decode_drained && execute_drained &&
         f1_to_f2_drained && f2_to_f1_drained &&
 //        f2_to_d_drained && d_to_e_drained;              // DEKim --
-        f2_to_d_drained && d_to_e1_drained &&            // DEKim ++
+        f2_to_d_drained && d_to_e1_drained &&         // DEKim ++
         execute1_drained && e1_to_e_drained;          // DEKim ++
 
 

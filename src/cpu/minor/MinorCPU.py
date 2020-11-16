@@ -138,6 +138,7 @@ class MinorDefaultIntDivFU(MinorFU):
     issueLat = 9
     opLat = 9
 
+part1_c = 1
 class MinorDefaultFloatSimdFU(MinorFU):
     opClasses = minorMakeOpClassSet([
         'FloatAdd', 'FloatCmp', 'FloatCvt', 'FloatMisc', 'FloatMult',
@@ -154,8 +155,9 @@ class MinorDefaultFloatSimdFU(MinorFU):
 
     timings = [MinorFUTiming(description='FloatSimd',
         srcRegsRelativeLats=[2])]
-#    issueLat = 1
-    opLat = 6
+
+    issueLat = part1_c;
+    opLat = 7-part1_c;
 
 class MinorDefaultPredFU(MinorFU):
     opClasses = minorMakeOpClassSet(['SimdPredAlu'])
@@ -204,7 +206,7 @@ class MinorCPU(BaseCPU):
         "Number of line fetches allowable in flight at once")
     fetch1LineSnapWidth = Param.Unsigned(0,
         "Fetch1 'line' fetch snap size in bytes"
-        " (0 means use system cache line size)") # 0 -> 1
+        " (0 means use system cache line size)")
     fetch1LineWidth = Param.Unsigned(0,
         "Fetch1 maximum fetch size in bytes (0 means use system cache"
         " line size)") # 0 -> 1
@@ -267,16 +269,16 @@ class MinorCPU(BaseCPU):
         "Size of input buffer to Execute in cycles-worth of insts.")
     executeMemoryWidth = Param.Unsigned(0,
         "Width (and snap) in bytes of the data memory interface. (0 mean use"
-        " the system cacheLineSize)") # 0 -> 1
-    executeMaxAccessesInMemory = Param.Unsigned(1,
+        " the system cacheLineSize)")
+    executeMaxAccessesInMemory = Param.Unsigned(2,
         "Maximum number of concurrent accesses allowed to the memory system"
-        " from the dcache port") # 2 -> 1
-    executeLSQMaxStoreBufferStoresPerCycle = Param.Unsigned(1,
-        "Maximum number of stores that the store buffer can issue per cycle") # 2 -> 1
+        " from the dcache port")
+    executeLSQMaxStoreBufferStoresPerCycle = Param.Unsigned(2,
+        "Maximum number of stores that the store buffer can issue per cycle") 
     executeLSQRequestsQueueSize = Param.Unsigned(1,
         "Size of LSQ requests queue (address translation queue)")
-    executeLSQTransfersQueueSize = Param.Unsigned(1,
-        "Size of LSQ transfers queue (memory transaction queue)") # 2 -> 1
+    executeLSQTransfersQueueSize = Param.Unsigned(2,
+        "Size of LSQ transfers queue (memory transaction queue)") 
     executeLSQStoreBufferSize = Param.Unsigned(5,
         "Size of LSQ store buffer")
     executeBranchDelay = Param.Cycles(1,
@@ -301,7 +303,7 @@ class MinorCPU(BaseCPU):
     branchPred = Param.BranchPredictor(TournamentBP(
         numThreads = Parent.numThreads), "Branch Predictor")
 
-    branchPredRate = Param.Unsigned(100, 
+    branchPredRate = Param.Unsigned(100,
         "Prediction Rate of Branch")
 
     def addCheckerCpu(self):

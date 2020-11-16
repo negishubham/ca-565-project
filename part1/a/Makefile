@@ -1,3 +1,3 @@
 default:
-	g++ -O2 -std=gnu++11 daxpy.cc 
+	g++ -S -O2 -std=gnu++11 daxpy.cc 
 

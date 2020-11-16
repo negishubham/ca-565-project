@@ -246,7 +246,7 @@
                 "fetch1LineSnapWidth": 0, 
                 "fetch1ToFetch2BackwardDelay": 1, 
                 "fetch1FetchLimit": 1, 
-                "executeIssueLimit": 1, 
+                "executeInputWidth": 1, 
                 "power_gating_on_idle": false, 
                 "dtb_walker_cache": {
                     "replacement_policy": {
@@ -351,16 +351,18 @@
                     "sequential_access": false, 
                     "assoc": 2
                 }, 
-                "executeLSQMaxStoreBufferStoresPerCycle": 1, 
+                "executeLSQMaxStoreBufferStoresPerCycle": 2, 
                 "function_trace": false, 
                 "do_checkpoint_insts": true, 
                 "decodeInputWidth": 1, 
                 "cxx_class": "MinorCPU", 
                 "executeMemoryIssueLimit": 1, 
+                "executeMemoryCommitLimit": 1, 
                 "decodeCycleInput": true, 
                 "syscallRetryLatency": 10000, 
                 "system": "system", 
-                "executeLSQTransfersQueueSize": 1, 
+                "executeLSQTransfersQueueSize": 2, 
+                "execute1CycleInput": true, 
                 "itb_walker_cache": {
                     "replacement_policy": {
                         "eventq_index": 0, 
@@ -468,7 +470,7 @@
                 "function_trace_start": 0, 
                 "cpu_id": 0, 
                 "checker": null, 
-                "eventq_index": 0, 
+                "execute1InputBufferSize": 3, 
                 "executeMemoryWidth": 0, 
                 "power_state": {
                     "default_state": "UNDEFINED", 
@@ -487,12 +489,13 @@
                     "type": "PowerState", 
                     "leaders": []
                 }, 
+                "execute1ToExecuteForwardDelay": 1, 
                 "executeBranchDelay": 1, 
-                "executeMemoryCommitLimit": 1, 
+                "eventq_index": 0, 
                 "do_quiesce": true, 
                 "type": "MinorCPU", 
                 "executeCycleInput": true, 
-                "executeAllowEarlyMemoryIssue": true, 
+                "executeCommitLimit": 1, 
                 "executeInputBufferSize": 7, 
                 "icache_port": {
                     "peer": "system.cpu.icache.cpu_side", 
@@ -602,7 +605,7 @@
                     "sequential_access": false, 
                     "assoc": 2
                 }, 
-                "socket_id": 0, 
+                "fetch2CycleInput": true, 
                 "progress_interval": 0, 
                 "isa": [
                     {
@@ -1447,13 +1450,13 @@
                 "executeSetTraceTimeOnIssue": false, 
                 "fetch2InputBufferSize": 2, 
                 "profile": 0, 
-                "fetch2ToDecodeForwardDelay": 1, 
-                "executeInputWidth": 1, 
+                "executeIssueLimit": 1, 
+                "decodeToExecute1ForwardDelay": 1, 
                 "decodeToExecuteForwardDelay": 1, 
                 "executeLSQRequestsQueueSize": 1, 
                 "pwr_gating_latency": 300, 
-                "fetch2CycleInput": true, 
-                "executeMaxAccessesInMemory": 1, 
+                "execute1InputWidth": 1, 
+                "executeMaxAccessesInMemory": 2, 
                 "enableIdling": true, 
                 "executeLSQStoreBufferSize": 5, 
                 "workload": [
@@ -1489,7 +1492,7 @@
                     }
                 ], 
                 "name": "cpu", 
-                "wait_for_remote_gdb": false, 
+                "socket_id": 0, 
                 "dtb": {
                     "name": "dtb", 
                     "system": "system", 
@@ -1529,6 +1532,7 @@
                     "size": 64
                 }, 
                 "simpoint_start_insts": [], 
+                "wait_for_remote_gdb": false, 
                 "executeSetTraceTimeOnCommit": true, 
                 "tracer": {
                     "eventq_index": 0, 
@@ -1539,7 +1543,7 @@
                 }, 
                 "branchPredRate": 100, 
                 "threadPolicy": "RoundRobin", 
-                "executeCommitLimit": 1, 
+                "executeAllowEarlyMemoryIssue": true, 
                 "fetch1LineWidth": 0, 
                 "branchPred": {
                     "choiceCtrBits": 2, 
@@ -1681,7 +1685,8 @@
                 }, 
                 "path": "system.cpu", 
                 "fetch1ToFetch2ForwardDelay": 1, 
-                "decodeInputBufferSize": 3
+                "decodeInputBufferSize": 3, 
+                "fetch2ToDecodeForwardDelay": 1
             }
         ], 
         "multi_thread": false, 

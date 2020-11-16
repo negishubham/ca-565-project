@@ -3,7 +3,7 @@
 
 int main(){
 
-    const int N = 10;
+    const int N = 1000;
     double X[N];
     double Y[N];
     double alpha = 0.5;
