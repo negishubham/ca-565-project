@@ -1,5 +1,8 @@
+#Part1-a
+#./build/X86/gem5.opt -d part1/a/output configs/example/se.py -c part1/a/a.out  --cpu-type=TimingSimpleCPU 
+
 #Part1-b
-#./build/X86/gem5.opt -d part1/b/output configs/example/se.py -c part1/b/a.out  --cpu-type=MinorCPU --l1d_size=64kB --l1i_size=16kB --caches --l2cache 
+./build/X86/gem5.opt -d part1/b/output configs/example/se.py -c part1/b/a.out  --cpu-type=TimingSimpleCPU  
 
 #Part1-c
 
@@ -35,10 +38,10 @@
 #mv part3/libquantum/output_100 part3/libquantum/output_baseline
 
 # Split output
-sed -i 's/    branchPredRate = Param.Unsigned(.*/    branchPredRate = Param.Unsigned(100,/' src/cpu/minor/MinorCPU.py 
-scons-3 -j4 ./build/ARM/gem5.opt
-./build/ARM/gem5.opt -d part3/sjeng/output_split configs/spec2k6/run.py -b sjeng --maxinsts=100000000 --cpu-type=MinorCPU --l1d_size=64kB --l1i_size=16kB --caches --l2cache
-./build/ARM/gem5.opt -d part3/bzip2/output_split configs/spec2k6/run.py -b bzip2 --maxinsts=100000000 --cpu-type=MinorCPU --l1d_size=64kB --l1i_size=16kB --caches --l2cache
-./build/ARM/gem5.opt -d part3/libquantum/output_split configs/spec2k6/run.py -b libquantum --maxinsts=100000000 --cpu-type=MinorCPU --l1d_size=64kB --l1i_size=16kB --caches --l2cache
+#sed -i 's/    branchPredRate = Param.Unsigned(.*/    branchPredRate = Param.Unsigned(100,/' src/cpu/minor/MinorCPU.py 
+#scons-3 -j4 ./build/ARM/gem5.opt
+#./build/ARM/gem5.opt -d part3/sjeng/output_split configs/spec2k6/run.py -b sjeng --maxinsts=100000000 --cpu-type=MinorCPU --l1d_size=64kB --l1i_size=16kB --caches --l2cache
+#./build/ARM/gem5.opt -d part3/bzip2/output_split configs/spec2k6/run.py -b bzip2 --maxinsts=100000000 --cpu-type=MinorCPU --l1d_size=64kB --l1i_size=16kB --caches --l2cache
+#./build/ARM/gem5.opt -d part3/libquantum/output_split configs/spec2k6/run.py -b libquantum --maxinsts=100000000 --cpu-type=MinorCPU --l1d_size=64kB --l1i_size=16kB --caches --l2cache
 
 

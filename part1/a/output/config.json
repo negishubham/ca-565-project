@@ -82,7 +82,7 @@
                 "app_path": "/proc", 
                 "name": "redirect_paths0", 
                 "host_paths": [
-                    "part1/b/output/fs/proc"
+                    "part1/a/output/fs/proc"
                 ], 
                 "eventq_index": 0, 
                 "cxx_class": "RedirectPath", 
@@ -93,7 +93,7 @@
                 "app_path": "/sys", 
                 "name": "redirect_paths1", 
                 "host_paths": [
-                    "part1/b/output/fs/sys"
+                    "part1/a/output/fs/sys"
                 ], 
                 "eventq_index": 0, 
                 "cxx_class": "RedirectPath", 
@@ -104,7 +104,7 @@
                 "app_path": "/tmp", 
                 "name": "redirect_paths2", 
                 "host_paths": [
-                    "part1/b/output/fs/tmp"
+                    "part1/a/output/fs/tmp"
                 ], 
                 "eventq_index": 0, 
                 "cxx_class": "RedirectPath", 
@@ -312,7 +312,7 @@
                         "pid": 100, 
                         "kvmInSE": false, 
                         "cxx_class": "Process", 
-                        "executable": "part1/b/a.out", 
+                        "executable": "part1/a/a.out", 
                         "drivers": [], 
                         "system": "system", 
                         "gid": 100, 
@@ -329,7 +329,7 @@
                         "path": "system.cpu.workload", 
                         "name": "workload", 
                         "cmd": [
-                            "part1/b/a.out"
+                            "part1/a/a.out"
                         ], 
                         "errout": "cerr", 
                         "useArchPT": false, 
