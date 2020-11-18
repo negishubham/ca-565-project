@@ -63,22 +63,22 @@ Pipeline::Pipeline(MinorCPU &cpu_, MinorCPUParams &params) :
         params.fetch1ToFetch2BackwardDelay, true),
     f2ToD(cpu.name() + ".f2ToD", "insts",
         params.fetch2ToDecodeForwardDelay),
-//    dToE(cpu.name() + ".dToE", "insts",         // DEKim --
-//        params.decodeToExecuteForwardDelay),    // DEKim --
-    dToE1(cpu.name() + ".dToE1", "insts",       // DEKim ++
-        params.decodeToExecute1ForwardDelay),   // DEKim ++
-    e1ToE(cpu.name() + ".e1ToE", "insts",       // DEKim ++
-        params.execute1ToExecuteForwardDelay),  // DEKim ++
+    dToE(cpu.name() + ".dToE", "insts",         // DEKim --
+        params.decodeToExecuteForwardDelay),    // DEKim --
+//    dToE1(cpu.name() + ".dToE1", "insts",       // DEKim ++
+//        params.decodeToExecute1ForwardDelay),   // DEKim ++
+//    e1ToE(cpu.name() + ".e1ToE", "insts",       // DEKim ++
+//        params.execute1ToExecuteForwardDelay),  // DEKim ++
     eToF1(cpu.name() + ".eToF1", "branch",
         params.executeBranchDelay),
     execute(cpu.name() + ".execute", cpu, params,
-//        dToE.output(), eToF1.input()),                  // DEKim --
-        e1ToE.output(), eToF1.input()),               // DEKim ++
-    execute1(cpu.name() + ".execute1", cpu, params,   // DEKim ++
-        dToE1.output(), e1ToE.input(), execute1.inputBuffer),               // DEKim ++
+        dToE.output(), eToF1.input()),                  // DEKim --
+//        e1ToE.output(), eToF1.input()),                               // DEKim ++
+//    execute1(cpu.name() + ".execute1", cpu, params,                   // DEKim ++
+//        dToE1.output(), e1ToE.input(), execute1.inputBuffer),         // DEKim ++
     decode(cpu.name() + ".decode", cpu, params,
-//        f2ToD.output(), dToE.input(), execute.inputBuffer),   // DEKim --
-        f2ToD.output(), dToE1.input(), execute.inputBuffer),   // DEKim ++
+        f2ToD.output(), dToE.input(), execute.inputBuffer),   // DEKim --
+//        f2ToD.output(), dToE1.input(), execute.inputBuffer),   // DEKim ++
     fetch2(cpu.name() + ".fetch2", cpu, params,
         f1ToF2.output(), eToF1.output(), f2ToF1.input(), f2ToD.input(),
         decode.inputBuffer),
@@ -88,11 +88,11 @@ Pipeline::Pipeline(MinorCPU &cpu_, MinorCPUParams &params) :
         /* The max depth of inter-stage FIFOs */
         std::max(params.fetch1ToFetch2ForwardDelay,
         std::max(params.fetch2ToDecodeForwardDelay,
-//        std::max(params.decodeToExecuteForwardDelay,        // DEKim --
-//        params.executeBranchDelay)))),                      // DEKim --
-        std::max(params.decodeToExecute1ForwardDelay,       // DEKim ++
-        std::max(params.execute1ToExecuteForwardDelay,      // DEKim ++
-        params.executeBranchDelay))))),                     // DEKim ++
+        std::max(params.decodeToExecuteForwardDelay,        // DEKim --
+        params.executeBranchDelay)))),                      // DEKim --
+//        std::max(params.decodeToExecute1ForwardDelay,       // DEKim ++
+//        std::max(params.execute1ToExecuteForwardDelay,      // DEKim ++
+//        params.executeBranchDelay))))),                     // DEKim ++
     needToSignalDrained(false)
 {
     if (params.fetch1ToFetch2ForwardDelay < 1) {
@@ -105,13 +105,13 @@ Pipeline::Pipeline(MinorCPU &cpu_, MinorCPUParams &params) :
             cpu.name(), params.fetch2ToDecodeForwardDelay);
     }
 
-//    if (params.decodeToExecuteForwardDelay < 1) {                       // DEKim --
-//        fatal("%s: decodeToExecuteForwardDelay must be >= 1 (%d)\n",    // DEKim --
-//            cpu.name(), params.decodeToExecuteForwardDelay);            // DEKim --
-//    }
+    if (params.decodeToExecuteForwardDelay < 1) {                       // DEKim --
+        fatal("%s: decodeToExecuteForwardDelay must be >= 1 (%d)\n",    // DEKim --
+            cpu.name(), params.decodeToExecuteForwardDelay);            // DEKim --
+    }
 
 
-    if (params.decodeToExecute1ForwardDelay < 1) {                       // DEKim ++
+/*    if (params.decodeToExecute1ForwardDelay < 1) {                       // DEKim ++
         fatal("%s: decodeToExecute1ForwardDelay must be >= 1 (%d)\n",    // DEKim ++
             cpu.name(), params.decodeToExecute1ForwardDelay);            // DEKim ++
     }
@@ -120,7 +120,7 @@ Pipeline::Pipeline(MinorCPU &cpu_, MinorCPUParams &params) :
         fatal("%s: execute1ToExecuteForwardDelay must be >= 1 (%d)\n",    // DEKim ++
             cpu.name(), params.execute1ToExecuteForwardDelay);            // DEKim ++
     }
-     
+    */ 
 
     if (params.executeBranchDelay < 1) {
         fatal("%s: executeBranchDelay must be >= 1\n",
@@ -145,10 +145,10 @@ Pipeline::minorTrace() const
     fetch2.minorTrace();
     f2ToD.minorTrace();
     decode.minorTrace();
-//    dToE.minorTrace();          // DEKim --
-    dToE1.minorTrace();       // DEKim ++
-    execute1.minorTrace();    // DEKim ++
-    e1ToE.minorTrace();       // DEKim ++ 
+    dToE.minorTrace();          // DEKim --
+//    dToE1.minorTrace();       // DEKim ++
+//    execute1.minorTrace();    // DEKim ++
+//    e1ToE.minorTrace();       // DEKim ++ 
     execute.minorTrace();
     eToF1.minorTrace();
     activityRecorder.minorTrace();
@@ -161,7 +161,7 @@ Pipeline::evaluate()
      *  'immediate', 0-time-offset TimeBuffer activity to be visible from
      *  later stages to earlier ones in the same cycle */
     execute.evaluate();
-    execute1.evaluate();    // DEKim ++
+//    execute1.evaluate();    // DEKim ++
     decode.evaluate();
     fetch2.evaluate();
     fetch1.evaluate();
@@ -173,9 +173,9 @@ Pipeline::evaluate()
     f1ToF2.evaluate();
     f2ToF1.evaluate();
     f2ToD.evaluate();
-//    dToE.evaluate();        // DEKim --
-    dToE1.evaluate();     // DEKim ++
-    e1ToE.evaluate();     // DEKim ++
+    dToE.evaluate();        // DEKim --
+//    dToE1.evaluate();     // DEKim ++
+//    e1ToE.evaluate();     // DEKim ++
     eToF1.evaluate();
 
     /* The activity recorder must be be called after all the stages and
@@ -264,37 +264,37 @@ Pipeline::isDrained()
     bool fetch1_drained = fetch1.isDrained();
     bool fetch2_drained = fetch2.isDrained();
     bool decode_drained = decode.isDrained();
-    bool execute1_drained = execute1.isDrained();     // DEKim ++
+//    bool execute1_drained = execute1.isDrained();     // DEKim ++
     bool execute_drained = execute.isDrained();
 
     bool f1_to_f2_drained = f1ToF2.empty();
     bool f2_to_f1_drained = f2ToF1.empty();
     bool f2_to_d_drained = f2ToD.empty();
-//    bool d_to_e_drained = dToE.empty();                 // DEKim --
-    bool d_to_e1_drained = dToE1.empty();             // DEKim ++
-    bool e1_to_e_drained = e1ToE.empty();             // DEKim ++
+    bool d_to_e_drained = dToE.empty();                 // DEKim --
+//    bool d_to_e1_drained = dToE1.empty();             // DEKim ++
+//    bool e1_to_e_drained = e1ToE.empty();             // DEKim ++
 
 
     bool ret = fetch1_drained && fetch2_drained &&
         decode_drained && execute_drained &&
         f1_to_f2_drained && f2_to_f1_drained &&
-//        f2_to_d_drained && d_to_e_drained;              // DEKim --
-        f2_to_d_drained && d_to_e1_drained &&         // DEKim ++
-        execute1_drained && e1_to_e_drained;          // DEKim ++
+        f2_to_d_drained && d_to_e_drained;              // DEKim --
+//        f2_to_d_drained && d_to_e1_drained &&         // DEKim ++
+//        execute1_drained && e1_to_e_drained;          // DEKim ++
 
 
     DPRINTF(MinorCPU, "Pipeline undrained stages state:%s%s%s%s%s%s%s%s\n",
         (fetch1_drained ? "" : " Fetch1"),
         (fetch2_drained ? "" : " Fetch2"),
         (decode_drained ? "" : " Decode"),
-        (execute1_drained ? "" : " Execute1"),      // DEKim ++
+//        (execute1_drained ? "" : " Execute1"),      // DEKim ++
         (execute_drained ? "" : " Execute"),
         (f1_to_f2_drained ? "" : " F1->F2"),
         (f2_to_f1_drained ? "" : " F2->F1"),
         (f2_to_d_drained ? "" : " F2->D"),
-//        (d_to_e_drained ? "" : " D->E")             // DEKim --
-        (d_to_e1_drained ? "" : " D->E1"),        // DEKim ++
-        (e1_to_e_drained ? "" : " E1->E")         // DEKim ++
+        (d_to_e_drained ? "" : " D->E")             // DEKim --
+//        (d_to_e1_drained ? "" : " D->E1"),        // DEKim ++
+//        (e1_to_e_drained ? "" : " E1->E")         // DEKim ++
         );
 
     return ret;

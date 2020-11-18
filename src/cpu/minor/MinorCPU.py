@@ -303,7 +303,7 @@ class MinorCPU(BaseCPU):
     branchPred = Param.BranchPredictor(TournamentBP(
         numThreads = Parent.numThreads), "Branch Predictor")
 
-    branchPredRate = Param.Unsigned(100,
+    branchPredRate = Param.Unsigned(0,
         "Prediction Rate of Branch")
 
     def addCheckerCpu(self):

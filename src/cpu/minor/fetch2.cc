@@ -69,7 +69,7 @@ Fetch2::Fetch2(const std::string &name,
     outputWidth(params.decodeInputWidth),
     processMoreThanOneInput(params.fetch2CycleInput),
     branchPredictor(*params.branchPred),
-    branchPredRate(params.branchPredRate),
+//    branchPredRate(params.branchPredRate),
     fetchInfo(params.numThreads),
     threadPriority(0)
 {
@@ -190,11 +190,11 @@ Fetch2::predictBranch(MinorDynInstPtr inst, BranchData &branch)
     Fetch2ThreadInfo &thread = fetchInfo[inst->id.threadId];
     TheISA::PCState inst_pc = inst->pc;
 
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<int> dis(0, 99);
+//    static std::random_device rd;
+//    static std::mt19937 gen(rd());
+//    static std::uniform_int_distribution<int> dis(0, 99);
 
-    int rand_num = dis(gen);
+//    int rand_num = dis(gen);
     //std::cout << "===========" << rand_num << " " << this->branchPredRate << std::endl;
 
     assert(!inst->predictedTaken);
@@ -208,14 +208,14 @@ Fetch2::predictBranch(MinorDynInstPtr inst, BranchData &branch)
 
         DPRINTF(Branch, "Trying to predict for inst: %s\n", *inst);
 
-        bool flip = false;
-        if (rand_num > this->branchPredRate){
-            flip = true;
-        }
+//        bool flip = false;
+//        if (rand_num > this->branchPredRate){
+//            flip = true;
+//        }
 
         if (branchPredictor.predict(inst->staticInst,
             inst->id.fetchSeqNum, inst_pc,
-            inst->id.threadId, flip))
+            inst->id.threadId))
         {
             inst->predictedTaken = true;
             inst->predictedTarget = inst_pc;

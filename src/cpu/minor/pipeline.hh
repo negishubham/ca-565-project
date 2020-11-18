@@ -79,13 +79,13 @@ class Pipeline : public Ticked
     Latch<ForwardLineData> f1ToF2;
     Latch<BranchData> f2ToF1;
     Latch<ForwardInstData> f2ToD;
-//    Latch<ForwardInstData> dToE;    // DEKim --
-    Latch<ForwardInstData> dToE1;   // DEKim ++
-    Latch<ForwardInstData> e1ToE;   // DEKim ++
+    Latch<ForwardInstData> dToE;    // DEKim --
+//    Latch<ForwardInstData> dToE1;   // DEKim ++
+//    Latch<ForwardInstData> e1ToE;   // DEKim ++
     Latch<BranchData> eToF1;
 
     Execute execute;
-    Execute1 execute1;            // DEKim ++
+//    Execute1 execute1;            // DEKim ++
     Decode decode;
     Fetch2 fetch2;
     Fetch1 fetch1;

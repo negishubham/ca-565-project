@@ -110,6 +110,8 @@ class Execute : public Named
      *  which pass the MinorDynInst::isNoCostInst test */
     unsigned int noCostFUIndex;
 
+    unsigned int branchPredRate;
+
     /** Dcache port to pass on to the CPU.  Execute owns this */
     LSQ lsq;
 
@@ -118,6 +120,7 @@ class Execute : public Named
 
     /** The execution functional units */
     std::vector<FUPipeline *> funcUnits;
+
 
   public: /* Public for Pipeline to be able to pass it to Decode */
     std::vector<InputBuffer<ForwardInstData>> inputBuffer;
