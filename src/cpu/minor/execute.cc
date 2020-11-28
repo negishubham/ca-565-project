@@ -249,12 +249,12 @@ Execute::tryToBranch(MinorDynInstPtr inst, Fault fault, BranchData &branch)
             pc_before, target);
     }
 
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<int> dis(0, 99);
+    //static std::random_device rd;
+    //static std::mt19937 gen(rd());
+    //static std::uniform_int_distribution<int> dis(0, 99);
 
-    int rand_num = dis(gen);
-    
+    //int rand_num = dis(gen);
+
 
     if (inst->predictedTaken && !force_branch) {
         /* Predicted to branch */
@@ -266,7 +266,7 @@ Execute::tryToBranch(MinorDynInstPtr inst, Fault fault, BranchData &branch)
                 inst->pc.instAddr(), inst->predictedTarget.instAddr(), *inst);
 
             reason = BranchData::BadlyPredictedBranch;
-        } else if (inst->predictedTarget == target && rand_num < this->branchPredRate) {
+        } else if (inst->predictedTarget == target){// && rand_num < this->branchPredRate) {
             /* Branch prediction got the right target, kill the branch and
              *  carry on.
              *  Note that this information to the branch predictor might get
