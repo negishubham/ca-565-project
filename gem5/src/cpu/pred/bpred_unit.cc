@@ -168,7 +168,7 @@ BPredUnit::drainSanityCheck() const
 
 bool
 BPredUnit::predict(const StaticInstPtr &inst, const InstSeqNum &seqNum,
-                   TheISA::PCState &pc, ThreadID tid, bool flip)
+                   TheISA::PCState &pc, ThreadID tid)
 {
     // See if branch predictor predicts taken.
     // If so, get its target addr either from the BTB or the RAS.
@@ -194,9 +194,6 @@ BPredUnit::predict(const StaticInstPtr &inst, const InstSeqNum &seqNum,
     } else {
         ++condPredicted;
         pred_taken = lookup(tid, pc.instAddr(), bp_history);
-        if(flip){
-            pred_taken = !pred_taken;
-        }
         DPRINTF(Branch, "[tid:%i] [sn:%llu] "
                 "Branch predictor predicted %i for PC %s\n",
                 tid, seqNum,  pred_taken, pc);
