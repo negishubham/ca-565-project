@@ -35,11 +35,11 @@
 
 LocalBP::LocalBP(const LocalBPParams *params)
     : BPredUnit(params),
-      localPredictorSize(params->localPredictorSize),
-      localCtrBits(params->localCtrBits),
-      localPredictorSets(localPredictorSize / localCtrBits),
-      localCtrs(localPredictorSets, SatCounter(localCtrBits)),
-      indexMask(localPredictorSets - 1)
+      localPredictorSize(params->localPredictorSize),   // 2048
+      localCtrBits(params->localCtrBits),   // 2
+      localPredictorSets(localPredictorSize / localCtrBits),    // 1024
+      localCtrs(localPredictorSets, SatCounter(localCtrBits)),  // 1024 SatCounters
+      indexMask(localPredictorSets - 1) // 111,1111,1111
 {
     if (!isPowerOf2(localPredictorSize)) {
         fatal("Invalid local predictor size!\n");
@@ -72,7 +72,7 @@ bool
 LocalBP::lookup(ThreadID tid, Addr branch_addr, void * &bp_history)
 {
     bool taken;
-    unsigned local_predictor_idx = getLocalIndex(branch_addr);
+    unsigned local_predictor_idx = getLocalIndex(branch_addr);  // pick one among '0 ~ 1023'
 
     DPRINTF(Fetch, "Looking up index %#x\n",
             local_predictor_idx);
@@ -119,14 +119,16 @@ bool
 LocalBP::getPrediction(uint8_t &count)
 {
     // Get the MSB of the count
-    return (count >> (localCtrBits - 1));
-}
+    return (count >> (localCtrBits - 1));   
+} // count --> shift 1 bit right
+  // if count >= 2,   --> return true.
+  // if count == 0, 1 --> return false
 
 inline
 unsigned
 LocalBP::getLocalIndex(Addr &branch_addr)
 {
-    return (branch_addr >> instShiftAmt) & indexMask;
+    return (branch_addr >> instShiftAmt) & indexMask;   // shift 2 bits, bitwise &, 0011,1111,1111
 }
 
 void

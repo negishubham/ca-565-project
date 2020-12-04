@@ -38,27 +38,27 @@
 BiModeBP::BiModeBP(const BiModeBPParams *params)
     : BPredUnit(params),
       globalHistoryReg(params->numThreads, 0),
-      globalHistoryBits(ceilLog2(params->globalPredictorSize)),
-      choicePredictorSize(params->choicePredictorSize),
-      choiceCtrBits(params->choiceCtrBits),
-      globalPredictorSize(params->globalPredictorSize),
-      globalCtrBits(params->globalCtrBits),
-      choiceCounters(choicePredictorSize, SatCounter(choiceCtrBits)),
-      takenCounters(globalPredictorSize, SatCounter(globalCtrBits)),
-      notTakenCounters(globalPredictorSize, SatCounter(globalCtrBits))
+      globalHistoryBits(ceilLog2(params->globalPredictorSize)),     // 13 bits
+      choicePredictorSize(params->choicePredictorSize),             // 8192
+      choiceCtrBits(params->choiceCtrBits),                         // 2 bits
+      globalPredictorSize(params->globalPredictorSize),             // 8192
+      globalCtrBits(params->globalCtrBits),                         // 2 bits
+      choiceCounters(choicePredictorSize, SatCounter(choiceCtrBits)),   // 8192 '2 bit counter'
+      takenCounters(globalPredictorSize, SatCounter(globalCtrBits)),    // 8192 '2 bit counter'
+      notTakenCounters(globalPredictorSize, SatCounter(globalCtrBits))  // 8192 '2 bit counter'
 {
     if (!isPowerOf2(choicePredictorSize))
         fatal("Invalid choice predictor size.\n");
     if (!isPowerOf2(globalPredictorSize))
         fatal("Invalid global history predictor size.\n");
 
-    historyRegisterMask = mask(globalHistoryBits);
-    choiceHistoryMask = choicePredictorSize - 1;
-    globalHistoryMask = globalPredictorSize - 1;
+    historyRegisterMask = mask(globalHistoryBits);  // uint(1,1111,1111,1111) : 13 1s
+    choiceHistoryMask = choicePredictorSize - 1;    // 8191 
+    globalHistoryMask = globalPredictorSize - 1;    // 8191
 
-    choiceThreshold = (ULL(1) << (choiceCtrBits - 1)) - 1;
-    takenThreshold = (ULL(1) << (globalCtrBits - 1)) - 1;
-    notTakenThreshold = (ULL(1) << (globalCtrBits - 1)) - 1;
+    choiceThreshold = (ULL(1) << (choiceCtrBits - 1)) - 1;  // 1 << 1 - 1 = 1
+    takenThreshold = (ULL(1) << (globalCtrBits - 1)) - 1;   // 1
+    notTakenThreshold = (ULL(1) << (globalCtrBits - 1)) - 1;    // 1
 }
 
 /*
@@ -103,7 +103,7 @@ BiModeBP::lookup(ThreadID tid, Addr branchAddr, void * &bpHistory)
     unsigned choiceHistoryIdx = ((branchAddr >> instShiftAmt)
                                 & choiceHistoryMask);
     unsigned globalHistoryIdx = (((branchAddr >> instShiftAmt)
-                                ^ globalHistoryReg[tid])
+                                ^ globalHistoryReg[tid])        // ^ : XOR
                                 & globalHistoryMask);
 
     assert(choiceHistoryIdx < choicePredictorSize);
@@ -140,7 +140,7 @@ void
 BiModeBP::btbUpdate(ThreadID tid, Addr branchAddr, void * &bpHistory)
 {
     globalHistoryReg[tid] &= (historyRegisterMask & ~ULL(1));
-}
+}   // ~ULL(1) = ~(000...0001) = 111...1110
 
 /* Only the selected direction predictor will be updated with the final
  * outcome; the status of the unselected one will not be altered. The choice

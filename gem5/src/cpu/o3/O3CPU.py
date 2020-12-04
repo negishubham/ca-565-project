@@ -85,7 +85,7 @@ class DerivO3CPU(BaseCPU):
                                    "delay")
     commitToFetchDelay = Param.Cycles(1, "Commit to fetch delay")
     fetchWidth = Param.Unsigned(8, "Fetch width")
-    fetchBufferSize = Param.Unsigned(64, "Fetch buffer size in bytes")
+    fetchBufferSize = Param.Unsigned(32, "Fetch buffer size in bytes")
     fetchQueueSize = Param.Unsigned(32, "Fetch queue size in micro-ops "
                                     "per-thread")
 
@@ -93,27 +93,27 @@ class DerivO3CPU(BaseCPU):
     iewToDecodeDelay = Param.Cycles(1, "Issue/Execute/Writeback to decode "
                                     "delay")
     commitToDecodeDelay = Param.Cycles(1, "Commit to decode delay")
-    fetchToDecodeDelay = Param.Cycles(1, "Fetch to decode delay")
+    fetchToDecodeDelay = Param.Cycles(4, "Fetch to decode delay")  # DEKim 1 --> 4 ==> Branch Misprediction Penalty: 15 cycles
     decodeWidth = Param.Unsigned(8, "Decode width")
 
     iewToRenameDelay = Param.Cycles(1, "Issue/Execute/Writeback to rename "
                                     "delay")
     commitToRenameDelay = Param.Cycles(1, "Commit to rename delay")
-    decodeToRenameDelay = Param.Cycles(1, "Decode to rename delay")
+    decodeToRenameDelay = Param.Cycles(4, "Decode to rename delay") # DEKim 1 --> 3 ==> Branch Misprediction Penalty: 15 cycles
     renameWidth = Param.Unsigned(8, "Rename width")
 
     commitToIEWDelay = Param.Cycles(1, "Commit to "
                "Issue/Execute/Writeback delay")
-    renameToIEWDelay = Param.Cycles(2, "Rename to "
+    renameToIEWDelay = Param.Cycles(4, "Rename to "     # DEKim 2 --> 4 ==> Branch Misprediction Penalty: 15 cycles
                "Issue/Execute/Writeback delay")
-    issueToExecuteDelay = Param.Cycles(1, "Issue to execute delay (internal "
+    issueToExecuteDelay = Param.Cycles(1, "Issue to execute delay (internal "   
               "to the IEW stage)")
-    dispatchWidth = Param.Unsigned(8, "Dispatch width")
-    issueWidth = Param.Unsigned(8, "Issue width")
-    wbWidth = Param.Unsigned(8, "Writeback width")
+    dispatchWidth = Param.Unsigned(8, "Dispatch width") # DEKim 8 --> 4
+    issueWidth = Param.Unsigned(4, "Issue width")   # DEKim 8 --> 4
+    wbWidth = Param.Unsigned(8, "Writeback width")  # DEKim 8 --> 4
     fuPool = Param.FUPool(DefaultFUPool(), "Functional Unit pool")
 
-    iewToCommitDelay = Param.Cycles(1, "Issue/Execute/Writeback to commit "
+    iewToCommitDelay = Param.Cycles(3, "Issue/Execute/Writeback to commit "     # DEKim 1 --> 3 ==> Branch Misprediction Penalty: 15 cycles
                "delay")
     renameToROBDelay = Param.Cycles(1, "Rename to reorder buffer delay")
     commitWidth = Param.Unsigned(8, "Commit width")
@@ -155,7 +155,7 @@ class DerivO3CPU(BaseCPU):
                                       "registers")
     numPhysCCRegs = Param.Unsigned(_defaultNumPhysCCRegs,
                                    "Number of physical cc registers")
-    numIQEntries = Param.Unsigned(64, "Number of instruction queue entries")
+    numIQEntries = Param.Unsigned(40, "Number of instruction queue entries")    # DEKim 64 --> 40
     numROBEntries = Param.Unsigned(192, "Number of reorder buffer entries")
 
     smtNumFetchingThreads = Param.Unsigned(1, "SMT Number of Fetching Threads")
@@ -171,9 +171,10 @@ class DerivO3CPU(BaseCPU):
     smtROBThreshold = Param.Int(100, "SMT ROB Threshold Sharing Parameter")
     smtCommitPolicy = Param.CommitPolicy('RoundRobin', "SMT Commit Policy")
 
-    branchPred = Param.BranchPredictor(TournamentBP(numThreads =
+    #branchPred = Param.BranchPredictor(TournamentBP(numThreads =
+    branchPred = Param.BranchPredictor(YAGSBP(numThreads =
                                                        Parent.numThreads),
-                                       "Branch Predictor")
+                                       "Branch Predictor")    
     needsTSO = Param.Bool(buildEnv['TARGET_ISA'] == 'x86',
                           "Enable TSO Memory model")
 

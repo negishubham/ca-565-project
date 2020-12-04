@@ -61,7 +61,7 @@ class BranchPredictor(SimObject):
     numThreads = Param.Unsigned(Parent.numThreads, "Number of threads")
     BTBEntries = Param.Unsigned(4096, "Number of BTB entries")
     BTBTagSize = Param.Unsigned(16, "Size of the BTB tags, in bits")
-    RASSize = Param.Unsigned(16, "RAS size")
+    RASSize = Param.Unsigned(32, "RAS size")
     instShiftAmt = Param.Unsigned(2, "Number of bits to shift instructions by")
 
     indirectBranchPred = Param.IndirectPredictor(SimpleIndirectPredictor(),
@@ -99,6 +99,18 @@ class BiModeBP(BranchPredictor):
     globalCtrBits = Param.Unsigned(2, "Bits per counter")
     choicePredictorSize = Param.Unsigned(8192, "Size of choice predictor")
     choiceCtrBits = Param.Unsigned(2, "Bits of choice counters")
+
+class YAGSBP(BranchPredictor):
+    type = 'YAGSBP'
+    cxx_class = 'YAGSBP'
+    cxx_header = "cpu/pred/yags.hh"
+
+    globalPredictorSize = Param.Unsigned(8192, "Size of global predictor")
+    globalCtrBits = Param.Unsigned(2, "Bits per counter")
+    choicePredictorSize = Param.Unsigned(8192, "Size of choice predictor")
+    choiceCtrBits = Param.Unsigned(2, "Bits of choice counters")
+    setAssociativity = Param.Unsigned(2, "Size of Set-Associativity")
+    tagBits = Param.Unsigned(8, "Size of Tag Bits") 
 
 class TAGEBase(SimObject):
     type = 'TAGEBase'

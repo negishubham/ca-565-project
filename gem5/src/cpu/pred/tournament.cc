@@ -50,14 +50,14 @@ TournamentBP::TournamentBP(const TournamentBPParams *params)
       localCtrs(localPredictorSize, SatCounter(localCtrBits)),
       localHistoryTableSize(params->localHistoryTableSize),
       localHistoryBits(ceilLog2(params->localPredictorSize)),
-      globalPredictorSize(params->globalPredictorSize),
+      globalPredictorSize(params->globalPredictorSize), // 8192 
       globalCtrBits(params->globalCtrBits),
       globalCtrs(globalPredictorSize, SatCounter(globalCtrBits)),
       globalHistory(params->numThreads, 0),
       globalHistoryBits(
           ceilLog2(params->globalPredictorSize) >
           ceilLog2(params->choicePredictorSize) ?
-          ceilLog2(params->globalPredictorSize) :
+          ceilLog2(params->globalPredictorSize) :   // 13
           ceilLog2(params->choicePredictorSize)),
       choicePredictorSize(params->choicePredictorSize),
       choiceCtrBits(params->choiceCtrBits),
@@ -124,8 +124,24 @@ TournamentBP::calcLocHistIdx(Addr &branch_addr)
 {
     // Get low order bits after removing instruction offset.
     return (branch_addr >> instShiftAmt) & (localHistoryTableSize - 1);
-}
+}   // 2048 --> 1000,0000,0000 , 2047 --> 0111,1111,1111
+// 00,0000,0000 ~ 111,1111,1111
+// 1,0000 --> 16
+// 1,0000,0000 --> 2^8=256
+// 1000,0000,0000 --> 2^11 = 2048
 
+// 1. Address 0: Branch --> Outcome: Taken
+// 2. Address 8: Branch --> Outcome: Not-Taken
+// 3. Address 0: Branch --> Outcome: Not-Taken
+// 4. Address 8: Branch --> Outcome: Taken
+// 5. Address 12: Branch --> Outcome: Taken
+
+// Global: TNNTT
+// Local: 0 : NNNNNNNNNNNNNTN
+//      : 1 : NNNNNNNNNNNNNNN
+//      : 2 : NNNNNNNNNNNNNNT
+//      : 3 : NNNNNNNNNNNNNNT
+//        2047 
 inline
 void
 TournamentBP::updateGlobalHistTaken(ThreadID tid)
@@ -181,7 +197,7 @@ TournamentBP::lookup(ThreadID tid, Addr branch_addr, void * &bp_history)
     bool choice_prediction;
 
     //Lookup in the local predictor to get its branch prediction
-    local_history_idx = calcLocHistIdx(branch_addr);
+    local_history_idx = calcLocHistIdx(branch_addr);            // 0 ~ 2047
     local_predictor_idx = localHistoryTable[local_history_idx]
         & localPredictorMask;
     local_prediction = localCtrs[local_predictor_idx] > localThreshold;
