@@ -135,6 +135,8 @@ def addNoISAOptions(parser):
     parser.add_option("--l2_assoc", type="int", default=8)
     parser.add_option("--l3_assoc", type="int", default=16)
     parser.add_option("--cacheline_size", type="int", default=32)
+    #parser.add_option("--l1cacheline_size", type="int", default=32)     # DEKim
+    #parser.add_option("--l2cacheline_size", type="int", default=128)    # DEKim
 
     # Enable Ruby
     parser.add_option("--ruby", action="store_true")

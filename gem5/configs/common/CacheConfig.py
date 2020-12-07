@@ -85,6 +85,9 @@ def config_cache(options, system):
 
     # Set the cache line size of the system
     system.cache_line_size = options.cacheline_size
+    
+    #system.l1cache_line_size = options.l1cacheline_size     # DEKim
+    #system.l2cache_line_size = options.l2cacheline_size     # DEKim
 
     # If elastic trace generation is enabled, make sure the memory system is
     # minimal so that compute delays do not include memory access latencies.
