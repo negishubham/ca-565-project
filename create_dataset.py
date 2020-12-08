@@ -19,11 +19,11 @@ parser.add_argument('--fn', type=str, default='SHORT-FP-1.cbp4.gz.txt')
 args = parser.parse_args()
 
 #filename= '/home/nano01/a/snegi/Projects/ca-565-project/CSE 6421 Branch Prediction/bpc6421AU16/traces/dataset/SHORT-FP-1.cbp4.gz.txt'
-filename = '/home/nano01/a/snegi/Projects/ca-565-project/CSE 6421 Branch Prediction/bpc6421AU16/traces/dataset/'+args.fn
+filename = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/'+args.fn
 
 print('Benchmark: {}'.format(args.fn))
-if not os.path.exists(filename.split('dataset/')[0]+'dataset/'+'final_dataset/'):    
-    os.mkdir(filename.split('dataset/')[0]+'dataset/'+'final_dataset/')
+if not os.path.exists(filename.split('dataset/')[0]+'dataset/'+'final_dataset_{}/'.format(args.fn.split('.')[0])):    
+    os.mkdir(filename.split('dataset/')[0]+'dataset/'+'final_dataset_{}/'.format(args.fn.split('.')[0]))
 
 pc_value=[]
 history_value=[]
@@ -46,13 +46,16 @@ ga_bits=48*8
 
 output_conv=[]
 index=0
+
+total_datapoints = 1500000 
+
 with open(filename) as f:
     line = f.readline()
     
     line = line.split(" ")
 
-#    while line:
-    while index<10:
+    while line:
+#    while index<10:
         if line[0] == '':
             break
 #############################################
@@ -87,10 +90,15 @@ with open(filename) as f:
             ga_temp = ga_value[index-1] + bin(int(line[1])).split('b')[1][-8:]
             ga_value.append(ga_temp if len(ga_temp) < ga_bits else  ga_temp[-ga_bits:])
         
-        
+        if len(pc_value) == total_datapoints:
+            break
         line = f.readline()
         line = line.split(" ") 
         index+=1         
+
+f.close()
+   
+
 
 #pdb.set_trace()
 
@@ -98,7 +106,9 @@ with open(filename) as f:
 print('d')
 #storing the pc (32 bits), ghr (512 bits), lhr (16 bits) and ga (48*8 bits) values
 
-for i in range(len(pc_value)):
+#for i in range(len(pc_value)):
+
+for i in range(total_datapoints):
     #pc
     pc.append(['0']*(pc_bits-len(pc_value[i])) + list(pc_value[i]) if len(pc_value[i]) < pc_bits else list(pc_value[i]))
     
@@ -149,34 +159,34 @@ train_indexes, test_indexes = indices[split:], indices[:split]
 colin= [x for x in range(len(in_conv[0]))]
 colout= [y for y in range(len(output_conv[0]))]
 
-with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset/'+'train_in.csv', 'a') as f:
+with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset_{}/'.format(args.fn.split('.')[0])+'train_in.csv', 'a') as f:
     wr = csv.writer(f, dialect='excel')
     wr.writerow(colin)
     for i in train_indexes:
         wr = csv.writer(f, dialect='excel')
         wr.writerow(in_conv[i])
-
-with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset/'+'train_label.csv', 'a') as f:
+f.close()
+with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset_{}/'.format(args.fn.split('.')[0])+'train_label.csv', 'a') as f:
     wr = csv.writer(f, dialect='excel')
     wr.writerow(colout)
     for i in train_indexes:
         wr = csv.writer(f, dialect='excel')
         wr.writerow(output_conv[i])
+f.close()            
             
-            
-with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset/'+'test_in.csv', 'a') as f:
+with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset_{}/'.format(args.fn.split('.')[0])+'test_in.csv', 'a') as f:
     wr = csv.writer(f, dialect='excel')
     wr.writerow(colin)
     for i in test_indexes:
         wr = csv.writer(f, dialect='excel')
         wr.writerow(in_conv[i])
-
-with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset/'+'test_label.csv', 'a') as f:
+f.close()
+with open (filename.split('dataset/')[0]+'dataset/'+'final_dataset_{}/'.format(args.fn.split('.')[0])+'test_label.csv', 'a') as f:
     wr = csv.writer(f, dialect='excel')
     wr.writerow(colout)  
     for i in test_indexes:
         wr = csv.writer(f, dialect='excel')
         wr.writerow(output_conv[i])            
-            
+f.close()            
             
             

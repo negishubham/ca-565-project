@@ -21,7 +21,7 @@ import argparse
 import random
 import pdb
 
-
+import models
     
     
     
@@ -37,11 +37,7 @@ if __name__ == "__main__":
             help='set if only CPU is available')
     parser.add_argument('--arch', action='store', default='mlp3layer',
             help='the architecture for the network: resnet')
-#    parser.add_argument('--model', '-a', metavar='MODEL', default='mlp3layer',
-#                    choices=model_names,
-#                    help='model architecture: ' +
-#                    ' | '.join(model_names) +
-#                    ' (default: resnet)')
+    parser.add_argument('--model', '-a', metavar='MODEL', default='LeNet5')
 
     parser.add_argument('--lr', action='store', default=1e-3, type=float, 
             help='the intial learning rate')
@@ -118,15 +114,21 @@ if __name__ == "__main__":
     os.environ['PYTHONHASHSEED'] = str(new_manual_seed)
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
     
-    model = LeNet5()
+#    model = LeNet5()
+    model = models.__dict__[args.model]()
+    print(model)
     model.cuda()
     pdb.set_trace()
     if args.gpus and len(args.gpus) > 1:
         model = torch.nn.DataParallel(model)     
     transformations = transforms.Compose([transforms.ToTensor()])
   
-    direc = '/home/nano01/a/snegi/Projects/ca-565-project/CSE 6421 Branch Prediction/bpc6421AU16/traces/dataset/final_dataset/'
+#    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset/'
     
+    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset_LONG-SPEC2K6-06/'
+#    pdb.set_trace()
+#    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/' + args.results_dir.split('/')[len(args.results_dir.split('/'))-1]+ '/'
+
     
     train_file = [direc + 'train_in.csv', direc + 'train_label.csv']
     
@@ -152,10 +154,15 @@ if __name__ == "__main__":
     
     criterion = nn.CrossEntropyLoss().cuda()
     
-#    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.2)
+#    setup_logging(os.path.join(save_path, 'log.txt'))
+    results_file = os.path.join(save_path, 'log.%s')
+    results = ResultsLog(results_file % 'txt', results_file % 'html')
+
+
+#    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+#    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.2)
 
     def train(train_loader, model, criterion, optimizer, epoch):
         """
@@ -297,9 +304,7 @@ if __name__ == "__main__":
             correct_k = correct[:k].view(-1).float().sum(0)
             res.append(correct_k.mul_(100.0 / batch_size))
         return res    
-#    setup_logging(os.path.join(save_path, 'log.txt'))
-    results_file = os.path.join(save_path, 'log.%s')
-    results = ResultsLog(results_file % 'txt', results_file % 'html')
+
 
     def adjust_learning_rate(optimizer, epoch):
         update_list = [15,30]
@@ -311,7 +316,7 @@ if __name__ == "__main__":
         return
 
     for epoch in range(args.start_epoch, args.epochs):
-#        adjust_learning_rate(optimizer, epoch)
+        adjust_learning_rate(optimizer, epoch)
         # train for one epoch
         print('current lr {:.5e}'.format(optimizer.param_groups[0]['lr']))
         train_result= train(train_loader, model, criterion, optimizer, epoch)
@@ -342,7 +347,7 @@ if __name__ == "__main__":
 
         results.add(epoch=epoch, train_acc=train_result[1], train_loss=train_result[0], test_acc=test_result[1])
         results.save()
-        scheduler.step()
+#        scheduler.step()
     
 
     
