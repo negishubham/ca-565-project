@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.init as init
 from collections import OrderedDict
 import pdb
-
+import torch
 
 def _weights_init(m):
     classname = m.__class__.__name__
@@ -34,6 +34,7 @@ class LeNet5(nn.Module):
         self.max_pool_2 = nn.MaxPool2d(kernel_size=(1, 2)) 
         # Fully connected layer
         self.fc1 = nn.Linear(50*1*230, 500)   # convert matrix with 16*5*5 (= 400) features to a matrix of 120 features (columns)
+        self.dropout = nn.Dropout(p=0.5)
         self.fc2 = nn.Linear(500, 2)       # Notaken(0), taken(1)
         self.sig = nn.Sigmoid()
         self.apply(_weights_init)
@@ -87,3 +88,4 @@ class DBN(nn.Module):
         out = self.relu4(self.fc4(out))
         out = self.sig(self.fc5(out))        
         return out
+    
