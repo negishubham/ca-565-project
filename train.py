@@ -118,15 +118,21 @@ if __name__ == "__main__":
     model = models.__dict__[args.model]()
     print(model)
     model.cuda()
-    pdb.set_trace()
+#    pdb.set_trace()
     if args.gpus and len(args.gpus) > 1:
         model = torch.nn.DataParallel(model)     
     transformations = transforms.Compose([transforms.ToTensor()])
   
 #    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset/'
     
-    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset_LONG-SPEC2K6-06/'
-#    pdb.set_trace()
+#    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset_LONG-SPEC2K6-03/'
+
+#    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset_SHORT-MM-1/'
+
+#    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset_SHORT-FP-1/'
+
+    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/final_dataset_SHORT-SERV-2/'
+
 #    direc = '/home/nano01/a/snegi/Projects/ca-565-project/cbp4/bpc6421AU16/traces/dataset/' + args.results_dir.split('/')[len(args.results_dir.split('/'))-1]+ '/'
 
     
@@ -316,7 +322,7 @@ if __name__ == "__main__":
         return
 
     for epoch in range(args.start_epoch, args.epochs):
-        adjust_learning_rate(optimizer, epoch)
+#        adjust_learning_rate(optimizer, epoch)
         # train for one epoch
         print('current lr {:.5e}'.format(optimizer.param_groups[0]['lr']))
         train_result= train(train_loader, model, criterion, optimizer, epoch)
@@ -348,6 +354,9 @@ if __name__ == "__main__":
         results.add(epoch=epoch, train_acc=train_result[1], train_loss=train_result[0], test_acc=test_result[1])
         results.save()
 #        scheduler.step()
+    results.add(epoch=epoch, train_acc=train_result[1], train_loss=train_result[0], test_acc=best_prec1)
+    results.save()
+        
     
 
     
