@@ -9,6 +9,4 @@ create_dataset.py file uses the trace from CBP-4 to generate train and test. cre
 
 train.py and models.py are the python files used in pytorch to train and test the neural network models. 
 
-
-
-
+Finally the trained neural network models are saved in results_allbenchmark folder
