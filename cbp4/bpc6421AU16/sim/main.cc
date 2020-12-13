@@ -17,6 +17,10 @@
 #include "utils.h"
 #include "tracer.h"
 #include "predictor.h"
+#include "yags.h"
+#include "bimode.h"
+#include "gshare.h"
+
 #include <iostream>
 #include <fstream>
 
@@ -24,55 +28,76 @@
 
 int main(int argc, char* argv[]){
   
-  if (argc != 2) {
-    printf("usage: %s <trace>\n", argv[0]);
+  if (argc != 3) {
+    printf("usage: %s <--yags or --bimode or --gshare> <trace>\n", argv[0]);
     exit(-1);
   }
+  
   std::string line; //string to save the pc and branch target values
   std::string pc="PC: ";
   std::string btr=" BTR: ";
   std::string ot=" OT: ";
   std::string bt=" BT: ";
-  std::string filename;
-  filename=argv[1];
-  std::ofstream file(filename+".txt");
+  std::string mode;
+  mode=argv[1];
+  std::string filename = argv[2];
+  
+  filename = filename.substr(10, filename.find("cbp4")-11);
+  filename += "-" + mode.substr(2);
+  cout << filename << endl;
+  
+  
+  
+  std::ofstream file;
+  bool there_is_limit = true;
+  if(there_is_limit)
+    file.open("./results/"+filename+".txt");
+  else file.open("./results_allInst/"+filename+".txt");
 
   ///////////////////////////////////////////////
   // Init variables
   ///////////////////////////////////////////////
     
-    CBP_TRACER *tracer = new CBP_TRACER(argv[1]);
-    PREDICTOR  *brpred = new PREDICTOR();
+    PREDICTOR *brpred;
+    CBP_TRACER *tracer = new CBP_TRACER(argv[2]);
+    if(mode == "--yags"){
+      brpred = new YAGS();
+    } else if (mode == "--bimode"){
+      brpred = new BiMode();
+    } else if (mode == "--gshare"){
+      brpred = new GSHARE();
+    }
     CBP_TRACE_RECORD *trace = new CBP_TRACE_RECORD();
     UINT64     numMispred =0;  
-    cout<<filename<<endl;
+    
   ///////////////////////////////////////////////
   // read each trace recod, simulate until done
   ///////////////////////////////////////////////
 
-      while (tracer->GetNextRecord(trace)) {
 
+  UINT32 limit = 1500000;  // until 1,500,000 conditional branch instructions
+  UINT32 num_cond_branch = 0;
+  while (tracer->GetNextRecord(trace)) {
 
-  //cout << line << endl;	
-  if(trace->opType == OPTYPE_BRANCH_COND){
-    line = pc+std::to_string(trace->PC) + btr+std::to_string(trace->branchTarget) + ot+std::to_string(trace->opType) + bt+std::to_string(trace->branchTaken);
-    file << line << endl;  
-	  bool predDir = brpred->GetPrediction(trace->PC);
+    //cout << line << endl;	
+    if(trace->opType == OPTYPE_BRANCH_COND){
+      num_cond_branch++;
+      bool predDir = brpred->GetPrediction(trace->PC);
 
-	  brpred->UpdatePredictor(trace->PC, trace->branchTaken, 
-				  predDir, trace->branchTarget);
-	  
-	  if(predDir != trace->branchTaken){
-	    numMispred++; // update mispred stats
-	  }
-	  
-	}
-        // for predictors that want to track all insts
-	else{
-	  brpred->TrackOtherInst(trace->PC, trace->opType, trace->branchTarget);
-	}
+      brpred->UpdatePredictor(trace->PC, trace->branchTaken, 
+            predDir, trace->branchTarget);
       
+      if(predDir != trace->branchTaken){
+        numMispred++; // update mispred stats
       }
+      
+    }
+          // for predictors that want to track all insts
+    else{
+      brpred->TrackOtherInst(trace->PC, trace->opType, trace->branchTarget);
+    }
+    if(there_is_limit && num_cond_branch == limit) break;
+  }
 
     ///////////////////////////////////////////
     //print_stats
@@ -82,8 +107,17 @@ int main(int argc, char* argv[]){
       printf("\nNUM_INSTRUCTIONS     \t : %10llu",   tracer->GetNumInst());
       printf("\nNUM_CONDITIONAL_BR   \t : %10llu",   tracer->GetNumCondBranch());
       printf("\nNUM_MISPREDICTIONS   \t : %10llu",   numMispred);
+      printf("\nMISPREDICTION_RATE   \t : %10.3f",   100.0*(double)numMispred/(double)(tracer->GetNumCondBranch()));
       printf("\nMISPRED_PER_1K_INST  \t : %10.3f",   1000.0*(double)(numMispred)/(double)(tracer->GetNumInst()));
       printf("\n\n");
+
+      file << "File Name           : " << filename << endl;
+      file << "NUM_INSTRUCTIONS    : " << tracer->GetNumInst() << endl;
+      file << "NUM_CONDITIONAL_BR  : " << tracer->GetNumCondBranch() << endl;
+      file << "NUM_MISPREDICTIONS  : " << numMispred << endl;
+      file << "MISPREDICTION_RATE  : " << 100.0*(double)numMispred/(double)(tracer->GetNumCondBranch()) << endl;
+      file << "MISPRED_PER_1K_INST : " << 1000.0*(double)(numMispred)/(double)(tracer->GetNumInst()) << endl;
+      file.close();
 }
 
 

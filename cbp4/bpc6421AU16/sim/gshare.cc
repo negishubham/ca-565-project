@@ -1,5 +1,5 @@
 
-#include "predictor.h"
+#include "gshare.h"
 
 
 #define PHT_CTR_MAX  3
@@ -20,8 +20,8 @@
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-PREDICTOR::PREDICTOR(void){
-/*
+GSHARE::GSHARE(void){
+
   historyLength    = HIST_LEN;
   ghr              = 0;
   numPhtEntries    = (1<< HIST_LEN);
@@ -31,13 +31,13 @@ PREDICTOR::PREDICTOR(void){
   for(UINT32 ii=0; ii< numPhtEntries; ii++){
     pht[ii]=PHT_CTR_INIT; 
   }
-  */
+  
 }
-/*
+
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-bool   PREDICTOR::GetPrediction(UINT32 PC){
+bool   GSHARE::GetPrediction(UINT32 PC){
 
   UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
   UINT32 phtCounter = pht[phtIndex];
@@ -55,7 +55,7 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT32 branchTarget){
+void  GSHARE::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT32 branchTarget){
 
   UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
   UINT32 phtCounter = pht[phtIndex];
@@ -80,7 +80,7 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-void    PREDICTOR::TrackOtherInst(UINT32 PC, OpType opType, UINT32 branchTarget){
+void    GSHARE::TrackOtherInst(UINT32 PC, OpType opType, UINT32 branchTarget){
 
   // This function is called for instructions which are not
   // conditional branches, just in case someone decides to design
@@ -92,4 +92,3 @@ void    PREDICTOR::TrackOtherInst(UINT32 PC, OpType opType, UINT32 branchTarget)
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
-*/
