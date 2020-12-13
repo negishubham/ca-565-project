@@ -55,3 +55,35 @@ class LeNet5(nn.Module):
         x = self.sig(self.fc2(x))
         
         return x
+    
+class DBN(nn.Module):
+    def __init__(self):
+        super(DBN, self).__init__()
+         # N=64
+        self.fc1 = nn.Linear(944, 630)
+        self.relu1 = nn.ReLU(inplace=True)
+        #         self.do1 = nn.Dropout(0.7)
+         
+        self.fc2 = nn.Linear(630, 270)
+        self.relu2 = nn.ReLU(inplace=True)
+        #         self.do2 = nn.Dropout(0.7)
+         
+        self.fc3 = nn.Linear(270, 630)
+        self.relu3 = nn.ReLU(inplace=True)    
+         
+        self.fc4 = nn.Linear(630, 944)
+        self.relu4 = nn.ReLU(inplace=True)  
+         
+        self.fc5 = nn.Linear(944, 2)
+        self.sig = nn.Sigmoid()
+        self.apply(_weights_init)        
+         
+    def forward(self, x):
+        x = x.view(x.size(0), -1)
+        
+        out = self.relu1(self.fc1(x))
+        out = self.relu2(self.fc2(out))
+        out = self.relu3(self.fc3(out))
+        out = self.relu4(self.fc4(out))
+        out = self.sig(self.fc5(out))        
+        return out
